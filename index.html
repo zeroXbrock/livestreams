@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown File Tree</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        code {
+            background-color: #dbdcda;
+            margin-bottom: 4px;
+            width: 100vw;
+            color: #383838;
+        }
+        #readme {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+        }
+        #file-tree {
+            /* float: left; */
+            width: 200px;
+            border-right: 1px solid #ccc;
+            padding-right: 20px;
+        }
+        #file-tree ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #file-tree li {
+            margin: 5px 0;
+        }
+        #file-content {
+            margin-left: 48px;
+        }
+    </style>
+</head>
+<body>
+    <div id="readme"></div>
+    <div style="display: flex; flex-direction: row;">
+        <div id="file-tree"></div>
+        <div id="file-content"></div>
+    </div>
+
+    <script>
+        // TODO: This should be fetched dynamically
+        const files = [
+            './pages/setting-up-a-suapp.md'
+        ];
+
+        async function fetchMarkdown(file) {
+            const response = await fetch(file);
+            return await response.text();
+        }
+
+        function renderMarkdown(markdown) {
+            const converter = new showdown.Converter();
+            return converter.makeHtml(markdown);
+        }
+
+        async function loadReadme() {
+            const markdown = await fetchMarkdown('./README.md');
+            document.getElementById('readme').innerHTML = renderMarkdown(markdown);
+        }
+
+        async function loadFileContent(file) {
+            const markdown = await fetchMarkdown(file);
+            document.getElementById('file-content').innerHTML = renderMarkdown(markdown).replaceAll('[ ]', '<input type="checkbox" />');
+        }
+
+        async function setContentArea(innerHTML) {
+            document.getElementById('file-content').innerHTML = innerHTML;
+        }
+
+        async function loadFile(file) {
+            await loadFileContent(file);
+            history.pushState({ file: file }, '', `?file=${file}`);
+        }
+
+        function createFileTree(files) {
+            const ul = document.createElement('ul');
+            files.forEach(file => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#';
+                a.textContent = file;
+                a.onclick = (event) => {
+                    event.preventDefault();
+                    loadFile(file);
+                };
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+            document.getElementById('file-tree').appendChild(ul);
+        }
+
+        async function init() {
+            await loadReadme();
+            createFileTree(files);
+
+            // Handle loading file from URL
+            const params = new URLSearchParams(window.location.search);
+            const file = params.get('file');
+            if (file) {
+                await loadFile(file);
+            } else {
+                setContentArea('<p>Select a file from the list on the left to view its content.</p>');
+            }
+
+            // Handle back/forward navigation
+            window.onpopstate = (event) => {
+                if (event.state && event.state.file) {
+                    loadFileContent(event.state.file);
+                }
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
+</body>
+</html>
