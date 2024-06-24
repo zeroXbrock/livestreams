@@ -42,14 +42,17 @@
 <body>
     <div id="readme"></div>
     <div style="display: flex; flex-direction: row;">
-        <div id="file-tree"></div>
+        <div>
+            <a href="">pages/</a>
+            <div style="margin-left: 16px;" id="file-tree"></div>
+        </div>
         <div id="file-content"></div>
     </div>
 
     <script>
         // TODO: This should be fetched dynamically
         const files = [
-            './pages/setting-up-a-suapp.md'
+            './pages/setting-up-a-suapp.md',
         ];
 
         async function fetchMarkdown(file) {
@@ -87,7 +90,7 @@
                 const li = document.createElement('li');
                 const a = document.createElement('a');
                 a.href = '#';
-                a.textContent = file;
+                a.textContent = file.replace('./pages/', '');
                 a.onclick = (event) => {
                     event.preventDefault();
                     loadFile(file);
