@@ -67,7 +67,8 @@
 
         async function loadReadme() {
             const markdown = await fetchMarkdown('./README.md');
-            document.getElementById('readme').innerHTML = renderMarkdown(markdown);
+            const deleteIndex = markdown.indexOf("[Contents]")
+            document.getElementById('readme').innerHTML = renderMarkdown(markdown.substring(0, deleteIndex))
         }
 
         async function loadFileContent(file) {
