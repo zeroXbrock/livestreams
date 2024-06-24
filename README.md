@@ -2,4 +2,4 @@
 
 Outlines for SUAPP development live streams.
 
-[Contents](./pages)
+[Contents](https://github.com/zeroXbrock/livestreams/tree/main/pages)
