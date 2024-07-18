@@ -7,7 +7,7 @@ import Counter from "../../out/Counter.sol/Counter.json"
 
 export type EthereumProvider = { request(...args: unknown[]): Promise<unknown> }
 
-const COUNTER_ADDRESS = "0xd594760B2A36467ec7F0267382564772D7b0b73c"
+const COUNTER_ADDRESS = "0xcb632cC0F166712f09107a7587485f980e524fF6"
 
 function App() {
   // the number from onchain:
