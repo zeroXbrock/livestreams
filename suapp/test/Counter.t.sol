@@ -18,6 +18,22 @@ contract CounterTest is Test, SuaveEnabled {
         }
     }
 
+    function sliceBytesArray(
+        bytes memory data,
+        uint256 start
+    ) internal pure returns (bytes memory) {
+        require(start <= data.length, "start index out of bounds");
+
+        uint256 length = data.length - start;
+        bytes memory result = new bytes(length);
+
+        for (uint256 i = 0; i < length; i++) {
+            result[i] = data[i + start];
+        }
+
+        return result;
+    }
+
     function testCounter() public {
         Counter counter = new Counter();
         ctx.setConfidentialInputs(abi.encode(42));
@@ -53,5 +69,17 @@ contract CounterTest is Test, SuaveEnabled {
         uint256 n = removeFunctionSelector(doLotsOfStuffResult);
         console2.log("doLotsOfStuff", n);
         assert(n == 42);
+    }
+
+    function testSetNumberWithStruct() public {
+        Counter counter = new Counter();
+        Counter.NumberState memory state = Counter.NumberState({
+            number: 1337,
+            setter: address(this)
+        });
+        ctx.setConfidentialInputs(abi.encode(state));
+        bytes memory res = counter.setNumberWithStruct();
+        bytes memory data = sliceBytesArray(res, 4);
+        assertEq(abi.decode(data, (uint256)), state.number);
     }
 }
