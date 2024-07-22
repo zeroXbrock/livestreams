@@ -11,6 +11,11 @@ contract Counter is Suapp {
 
     event NumberSet(uint256 number);
 
+    struct NumberState {
+        uint256 number;
+        address setter;
+    }
+
     modifier confidential() {
         require(Suave.isConfidential(), "Counter: not confidential");
         _;
@@ -62,5 +67,15 @@ contract Counter is Suapp {
         );
         uint256 balance = abi.decode(rawBalance, (uint256));
         return abi.encodeWithSelector(this.onSetNumber.selector, balance);
+    }
+
+    function setNumberWithStruct() public confidential returns (bytes memory) {
+        bytes memory confInputs = Context.confidentialInputs();
+        NumberState memory state = abi.decode(confInputs, (NumberState));
+        require(
+            state.setter == msg.sender,
+            "Counter: invalid setter, must be equal to sender"
+        );
+        return abi.encodeWithSelector(this.onSetNumber.selector, state.number);
     }
 }
