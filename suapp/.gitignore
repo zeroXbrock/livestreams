@@ -13,5 +13,5 @@ docs/
 # Dotenv file
 .env
 
-# contract deployment
+# ../deployContracts.sh
 contract-deployment.json
